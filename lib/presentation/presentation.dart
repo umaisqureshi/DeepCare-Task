@@ -1,0 +1,19 @@
+library Presentation;
+
+export 'package:flutter/material.dart';
+export 'package:google_fonts/google_fonts.dart';
+export 'package:flutter/services.dart';
+export 'package:deep_care_case_study/app.dart';
+export 'package:deep_care_case_study/di/app_dependency.dart';
+export 'package:deep_care_case_study/presentation/utils/time_formatter.dart';
+export 'package:deep_care_case_study/presentation/home/widgets/home_clock_widget.dart';
+export 'package:deep_care_case_study/presentation/home/widgets/home_date_widget.dart';
+export 'package:equatable/equatable.dart';
+export 'package:flutter_bloc/flutter_bloc.dart';
+export 'package:deep_care_case_study/core/usecase/usecase.dart';
+export 'package:deep_care_case_study/domain/usecase/get_random_number_case.dart';
+export 'package:deep_care_case_study/di/di.dart';
+export 'package:deep_care_case_study/presentation/home/bloc/home_bloc.dart';
+export 'package:deep_care_case_study/presentation/home/home_screen.dart';
+export 'package:deep_care_case_study/presentation/home/widgets/home_prime_success_widget.dart';
+export 'package:deep_care_case_study/presentation/home/widgets/home_timer_widget.dart';
