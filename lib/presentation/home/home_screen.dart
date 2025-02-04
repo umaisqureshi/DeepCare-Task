@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
           listener: (context, state) {
             if (state is HomeErrorState) {
               _timer?.cancel();
-              debugPrint("its HomeErrorState ");
             }
           },
           builder: (context, state) {
@@ -60,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (state is HomeErrorState) {
                   return HomeErrorScreen(
                     onPressed: () {
-                      context.read<HomeBloc>().add(GetSavedTimeEvent());
+                      context.read<HomeBloc>().add(GetRandomNumberEvent());
                       _startTimer();
                     },
                   );

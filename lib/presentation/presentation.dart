@@ -21,3 +21,4 @@ export 'package:deep_care_case_study/data/local/local_db.dart';
 export 'package:deep_care_case_study/data/local/model/db_model.dart';
 export 'package:deep_care_case_study/presentation/home/bloc/data/bloc_data.dart';
 export 'package:deep_care_case_study/presentation/home/widgets/home_error_screen.dart';
+export 'package:lottie/lottie.dart';

@@ -23,13 +23,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         onSuccess: (number) {
           if (_isPrime(number)) {
             _updatePrimeTime(DateTime.now(), number);
+            emit(PrimeNumberState(
+              number: _blocData.primeNumber ?? 0,
+              updatedTime: _blocData.timeDifference ?? "00:00:00",
+            ));
           } else if (_blocData.lastPrimeTime != null) {
             _updateTimeDifference(DateTime.now());
+            emit(PrimeNumberState(
+              number: _blocData.primeNumber ?? 0,
+              updatedTime: _blocData.timeDifference ?? "00:00:00",
+            ));
+          } else {
+            emit(HomeInitialState());
           }
-          emit(PrimeNumberState(
-            number: _blocData.primeNumber ?? 0,
-            updatedTime: _blocData.timeDifference ?? "00:00:00",
-          ));
         },
         onError: (e) {
           emit(HomeErrorState());
