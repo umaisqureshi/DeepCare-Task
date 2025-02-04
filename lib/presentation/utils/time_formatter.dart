@@ -10,13 +10,9 @@ String formatDateTimeIntoDayDate(DateTime dateTime) {
 
 String getTimeDifference(DateTime start, DateTime end) {
   Duration difference = end.difference(start);
-  int hours = difference.inHours;
-  int minutes = difference.inMinutes % 60;
-  int seconds = difference.inSeconds % 60;
-
-  String formattedHours = hours.toString().padLeft(2, '0');
-  String formattedMinutes = minutes.toString().padLeft(2, '0');
-  String formattedSeconds = seconds.toString().padLeft(2, '0');
-
-  return '$formattedHours:$formattedMinutes:${formattedSeconds}s';
+  return [
+    difference.inHours.toString().padLeft(2, '0'),
+    (difference.inMinutes % 60).toString().padLeft(2, '0'),
+    (difference.inSeconds % 60).toString().padLeft(2, '0')
+  ].join(':');
 }

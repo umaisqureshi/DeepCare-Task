@@ -10,3 +10,5 @@ class PrimeNumberState extends HomeState {
 
   PrimeNumberState({required this.number, required this.updatedTime});
 }
+
+class HomeErrorState extends HomeState {}

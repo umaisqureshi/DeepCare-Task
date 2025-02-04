@@ -1,5 +1,4 @@
-import 'package:deep_care_case_study/data/local/model/db_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../data.dart';
 
 class LocalDataBase {
   LocalDataBase._internal();

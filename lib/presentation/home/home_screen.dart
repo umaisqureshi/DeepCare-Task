@@ -37,19 +37,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
-        body: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            if (state is PrimeNumberState) {
-              return HomePrimeSuccessWidget(
-                onClose: () {
-                  _timer?.cancel();
-                  context.read<HomeBloc>().add(ReturnToClockEvent());
-                },
-                number: state.number,
-                updatedTime: state.updatedTime,
-              );
+        body: BlocConsumer<HomeBloc, HomeState>(
+          listener: (context, state) {
+            if (state is HomeErrorState) {
+              _timer?.cancel();
+              debugPrint("its HomeErrorState ");
             }
-            return HomeTimerWidget();
+          },
+          builder: (context, state) {
+            return BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is PrimeNumberState) {
+                  return HomePrimeSuccessWidget(
+                    onClose: () {
+                      _timer?.cancel();
+                      context.read<HomeBloc>().add(ReturnToClockEvent());
+                    },
+                    number: state.number,
+                    updatedTime: state.updatedTime,
+                  );
+                }
+                if (state is HomeErrorState) {
+                  return HomeErrorScreen(
+                    onPressed: () {
+                      context.read<HomeBloc>().add(GetSavedTimeEvent());
+                      _startTimer();
+                    },
+                  );
+                }
+
+                return HomeTimerWidget();
+              },
+            );
           },
         ));
   }

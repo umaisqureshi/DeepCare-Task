@@ -1,92 +1,103 @@
-import 'package:deep_care_case_study/data/local/local_db.dart';
-import 'package:deep_care_case_study/data/local/model/db_model.dart';
-import 'package:deep_care_case_study/presentation/home/bloc/data/bloc_data.dart';
 import 'package:deep_care_case_study/presentation/presentation.dart';
+
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetRandomNumberUseCase _getRandomNumberUseCase;
-  HomeBlocData blocData = HomeBlocData();
-  LocalDataBase localDataBase = LocalDataBase.instance;
+  final LocalDataBase _localDatabase = LocalDataBase.instance;
+  HomeBlocData _blocData = HomeBlocData();
 
   HomeBloc({required GetRandomNumberUseCase getRandomNumberUseCase})
       : _getRandomNumberUseCase = getRandomNumberUseCase,
         super(HomeInitialState()) {
-    on<GetRandomNumberEvent>(_getRandomNumber);
-    on<ReturnToClockEvent>(_resetAllData);
-    on<GetSavedTimeEvent>(_getSavedData);
+    on<GetRandomNumberEvent>(_handleGetRandomNumber);
+    on<ReturnToClockEvent>(_handleResetAllData);
+    on<GetSavedTimeEvent>(_handleGetSavedData);
   }
 
-  _getRandomNumber(GetRandomNumberEvent event, Emitter<HomeState> emit) {
-    return _getRandomNumberUseCase.perform(UseCaseResult(
-        onSuccess: (data) {
-          if (isPrime(data)) {
-            debugPrint("-------------PRIME------- $data -------");
-            updatePrimeTime(DateTime.now(), data);
-
-            emit(PrimeNumberState(
-                number: blocData.primeNumber!,
-                updatedTime: blocData.timeDifference!));
-          } else if (blocData.lastPrimeTime != null) {
-            debugPrint("-------------NOT PRIME------- $data -------");
-            updateTimeDifference(DateTime.now());
-            emit(PrimeNumberState(
-                number: blocData.primeNumber!,
-                updatedTime: blocData.timeDifference!));
-          } else {
-            debugPrint(
-                "-------------Not A SINGLE PRIME YET------- $data -------");
+  Future<void> _handleGetRandomNumber(
+      GetRandomNumberEvent event, Emitter<HomeState> emit) async {
+    await _getRandomNumberUseCase.perform(
+      UseCaseResult(
+        onSuccess: (number) {
+          if (_isPrime(number)) {
+            _updatePrimeTime(DateTime.now(), number);
+          } else if (_blocData.lastPrimeTime != null) {
+            _updateTimeDifference(DateTime.now());
           }
+          emit(PrimeNumberState(
+            number: _blocData.primeNumber ?? 0,
+            updatedTime: _blocData.timeDifference ?? "00:00:00",
+          ));
         },
-        onError: (e) {}));
+        onError: (e) {
+          emit(HomeErrorState());
+        },
+      ),
+    );
   }
 
-  _getSavedData(GetSavedTimeEvent event, Emitter<HomeState> emit) async {
-    DbModel? data = await localDataBase.getLastPrimeData();
-    debugPrint("-------------Local Data------- $data -------");
-    if (data == null) {
-      blocData = blocData.copyWith(startDate: DateTime.now());
-      add(GetRandomNumberEvent());
-    } else {
-      blocData = blocData.copyWith(
-          lastPrimeTime: data.primeTime,
-          primeNumber: data.primeNumber,
-          timeDifference: getTimeDifference(data.primeTime, DateTime.now()));
+  Future<void> _handleGetSavedData(
+      GetSavedTimeEvent event, Emitter<HomeState> emit) async {
+    try {
+      DbModel? savedData = await _localDatabase.getLastPrimeData();
 
-      emit(PrimeNumberState(
-          number: blocData.primeNumber!,
-          updatedTime: blocData.timeDifference!));
+      if (savedData == null) {
+        _blocData = _blocData.copyWith(startDate: DateTime.now());
+        add(GetRandomNumberEvent());
+      } else {
+        _blocData = _blocData.copyWith(
+          lastPrimeTime: savedData.primeTime,
+          primeNumber: savedData.primeNumber,
+          timeDifference:
+              getTimeDifference(savedData.primeTime, DateTime.now()),
+        );
+
+        emit(PrimeNumberState(
+          number: _blocData.primeNumber ?? 0,
+          updatedTime: _blocData.timeDifference ?? "00:00:00",
+        ));
+      }
+    } catch (e) {
+      emit(HomeErrorState());
     }
   }
 
-  _resetAllData(ReturnToClockEvent event, Emitter<HomeState> emit) {
-    blocData = blocData.copyWith(
-        startDate: DateTime.now(),
-        lastPrimeTime: null,
-        primeNumber: null,
-        timeDifference: "00:00:00");
-    localDataBase.clearData();
+  Future<void> _handleResetAllData(
+      ReturnToClockEvent event, Emitter<HomeState> emit) async {
+    _blocData = _blocData.copyWith(
+      startDate: DateTime.now(),
+      lastPrimeTime: null,
+      primeNumber: null,
+      timeDifference: "00:00:00",
+    );
+    _localDatabase.clearData();
 
     emit(HomeInitialState());
   }
 
-  void updatePrimeTime(DateTime time, int number) {
-    blocData = blocData.copyWith(
-        lastPrimeTime: time,
-        primeNumber: number,
-        startDate: blocData.lastPrimeTime,
-        timeDifference: "00:00:00s");
-    localDataBase.saveLastPrimeData(DateTime.now(), number);
+  Future<void> _updatePrimeTime(DateTime time, int number) async {
+    _blocData = _blocData.copyWith(
+      lastPrimeTime: time,
+      primeNumber: number,
+      startDate: _blocData.lastPrimeTime,
+      timeDifference: "00:00:00",
+    );
+
+    _localDatabase.saveLastPrimeData(time, number);
   }
 
-  void updateTimeDifference(DateTime time) {
-    blocData = blocData.copyWith(
-        timeDifference: getTimeDifference(
-            blocData.lastPrimeTime ?? blocData.startDate!, time));
+  void _updateTimeDifference(DateTime time) {
+    _blocData = _blocData.copyWith(
+      timeDifference: getTimeDifference(
+        _blocData.lastPrimeTime ?? _blocData.startDate!,
+        time,
+      ),
+    );
   }
 
-  bool isPrime(int number) {
+  bool _isPrime(int number) {
     if (number < 2) return false;
     for (int i = 2; i * i <= number; i++) {
       if (number % i == 0) return false;
