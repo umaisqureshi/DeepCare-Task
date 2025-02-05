@@ -1,5 +1,3 @@
-import 'package:deep_care_case_study/core/route/app_router.dart';
-
 import 'presentation/presentation.dart';
 
 class MyApp extends StatelessWidget {

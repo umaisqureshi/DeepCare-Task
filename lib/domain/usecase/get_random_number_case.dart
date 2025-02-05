@@ -1,4 +1,3 @@
-import 'package:deep_care_case_study/data/data.dart';
 import 'package:deep_care_case_study/domain/domain.dart';
 
 @injectable
