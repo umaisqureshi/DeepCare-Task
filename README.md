@@ -4,17 +4,6 @@
 A Flutter project with Clean Architecture using Flutter Bloc State Management with
 combination of Repository pattern.
 
-### Answers
-
-##  Which patterns/libraries did you use and why?
-      - I used Flutter BLoC for state management because it provides a structured and scalable way to manage application state, ensuring a clear separation of concerns between the UI and business logic. It also simplifies event-driven architecture and makes the app more testable and maintainable.
-       For local data storage, I used SharedPreferences to persist small amounts of key-value data, such as prime number preferences with Singleton design pattern. This is efficient for lightweight storage needs without requiring a full database solution.
-       Additionally, I implemented the Repository Pattern in my architecture to maintain a clean separation between the data layer and business logic. This pattern abstracts data sources , improving modularity and making it easier to switch data sources without affecting the application logic. 
-
-## What assumptions did you make that influenced your design?
-     -  I assumed the app would scale over time, so I used Clean Architecture with separate Presentation, Domain, Data, and Core layers to ensure modularity and maintainability. To keep business logic independent and testable, I implemented Dependency Injection and the Repository Pattern, allowing flexibility in managing multiple data sources. Flutter BLoC was chosen for state management to handle asynchronous operations efficiently. Additionally, I assumed lightweight local storage would be needed, so I integrated SharedPreferences for caching small data. These assumptions ensured a scalable, testable, and well-structured application. 
-
-
 ## Product Features
  - The main screen shows a clock.
  - Meanwhile, the app should every 10 seconds call an API that returns a random number:
